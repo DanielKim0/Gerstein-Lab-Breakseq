@@ -1,60 +1,33 @@
-import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import sys
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
+from MLModel import MLModel
 
-def prepare_data(filename):
-    dataset = pd.read_csv(sys.argv[1])
-    dataset = dataset[dataset.classifs != "\"UNSURE\""]
-    dataset.dropna(axis="columns", inplace=True)
-    dataset["classifs"] = dataset["classifs"].astype(str)
-    X = dataset.iloc[:, 1:-1]
-    y = dataset.iloc[:, -1]
-    return X, y
 
-def data_split(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y)
-    le = LabelEncoder()
-    y_train = le.fit_transform(y_train)
-    y_test = le.transform(y_test)
-    return X_train, X_test, y_train, y_test
+class RandomForestModel(MLModel):
+    def __init__(self, data_file):
+        super().__init__(data_file, "results_random_forest.txt", 0.3)
 
-def kfold_y(y):
-    le = LabelEncoder()
-    y = le.fit_transform(y)
-    return y
+    def model_build(self, estimators):
+        return RandomForestClassifier(n_estimators=estimators)
 
-def random_forest_cycle(X_train, X_test, y_train, y_test):
-    results = open("results_forest.txt", "w")
-    for estimators in [20, 40, 60, 80, 100]:
-        clf = RandomForestClassifier(n_estimators=estimators)
-        clf.fit(X_train.values, y_train)
-        accu_train = np.sum(clf.predict(X_train.values) == y_train)/y_train.size
-        y_score = clf.predict(X_test.values)
-        accu_test = np.sum(y_score == y_test)/y_test.size
+    def model_run(self, model, estimators):
+        model.fit(self.X_train, self.y_train)
+        y_score = model.predict(self.X_test)
+        accu_train = np.sum(model.predict(self.X_train.values) == self.y_train) / self.y_train.size
+        accu_test = np.sum(y_score == self.y_test) / self.y_test.size
 
-        results.write("Number of Estimators: " + str(estimators) + "\n")
-        results.write("Accuracy on Train: " + str(accu_train) + "\n")
-        results.write("Accuracy on Test: " + str(accu_test) + "\n")
+        self.results.write("Model Results\n")
+        self.results.write("Number of Estimators: " + str(estimators) + "\n")
+        self.results.write("Accuracy on Train: " + str(accu_train) + "\n")
+        self.results.write("Accuracy on Test: " + str(accu_test) + "\n")
 
-def kfold(X, y):
-    clf = RandomForestClassifier(n_estimators=100)
-    kfold = KFold(n_splits=10)
-    results = cross_val_score(clf, X, y, cv=kfold, scoring="accuracy")
-    result = results.mean()
-    std = results.std()
-    results = open("kfold_forest.txt", "w")
-    results.write("mean:" + str(result) + "\n")
-    results.write("std:" + str(std) + "\n")
-
-def main(file_name):
-    X, y = prepare_data(file_name)
-    y = kfold_y(y)
-    kfold(X, y)
+    def kfold_run(self, estimators):
+        model = self.model_build(estimators)
+        super().kfold_run(model)
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    rf = RandomForestModel(sys.argv[1])
+    rf_model = rf.model_build(100)
+    rf.model_run(rf_model, 100)
+    rf.kfold_run(100)
