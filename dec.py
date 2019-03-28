@@ -1,31 +1,12 @@
-"""
-Keras implementation for Deep Embedded Clustering (DEC) algorithm:
-
-Original Author:
-    Xifeng Guo. 2017.1.30
-"""
-from sklearn.model_selection import train_test_split
-from scipy.stats import mode
-from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-
-import sys
-import os
-import keras
-import numpy as np
-import pandas as pd
-import keras.backend as K
 from time import time
-
-from keras import callbacks
+import numpy as np
+import keras.backend as K
+from keras.engine.topology import Layer, InputSpec
+from keras.layers import Dense, Input
 from keras.models import Model
 from keras.optimizers import SGD
-from keras.layers import Dense, Input
+from keras import callbacks
 from keras.initializers import VarianceScaling
-from keras.engine.topology import Layer, InputSpec
-
-from scipy.misc import imread
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, normalized_mutual_info_score, adjusted_rand_score
 
@@ -67,7 +48,6 @@ class ClusteringLayer(Layer):
     """
     Clustering layer converts input sample (feature) to soft label, i.e. a vector that represents the probability of the
     sample belonging to each cluster. The probability is calculated with student's t-distribution.
-
     # Example
     ```
         model.add(ClusteringLayer(n_clusters=10))
@@ -127,7 +107,7 @@ class ClusteringLayer(Layer):
 class DEC(object):
     def __init__(self,
                  dims,
-                 n_clusters=3,
+                 n_clusters=10,
                  alpha=1.0,
                  init='glorot_uniform'):
 
@@ -159,7 +139,7 @@ class DEC(object):
                     super(PrintACC, self).__init__()
 
                 def on_epoch_end(self, epoch, logs=None):
-                    if epoch % int(epochs/10) != 0:
+                    if int(epochs/10) != 0 and epoch % int(epochs/10) != 0:
                         return
                     feature_model = Model(self.model.input,
                                           self.model.get_layer(
@@ -176,7 +156,7 @@ class DEC(object):
         # begin pretraining
         t0 = time()
         self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb)
-        print('Pretraining time: ', time() - t0)
+        print('Pretraining time: %ds' % round(time() - t0))
         self.autoencoder.save_weights(save_dir + '/ae_weights.h5')
         print('Pretrained weights are saved to %s/ae_weights.h5' % save_dir)
         self.pretrained = True
@@ -203,7 +183,7 @@ class DEC(object):
             update_interval=140, save_dir='./results/temp'):
 
         print('Update interval', update_interval)
-        save_interval = x.shape[0] / batch_size * 5  # 5 epochs
+        save_interval = int(x.shape[0] / batch_size) * 5  # 5 epochs
         print('Save interval', save_interval)
 
         # Step 1: initialize cluster centers using k-means
@@ -253,7 +233,7 @@ class DEC(object):
             # if index == 0:
             #     np.random.shuffle(index_array)
             idx = index_array[index * batch_size: min((index+1) * batch_size, x.shape[0])]
-            self.model.train_on_batch(x=x[idx], y=p[idx])
+            loss = self.model.train_on_batch(x=x[idx], y=p[idx])
             index = index + 1 if (index + 1) * batch_size <= x.shape[0] else 0
 
             # save intermediate model
@@ -270,12 +250,10 @@ class DEC(object):
 
         return y_pred
 
-
 # setting the hyper parameters
 init = 'glorot_uniform'
 pretrain_optimizer = 'adam'
-dataset = 'mnist'
-batch_size = 2048
+# batch_size = 2048
 maxiter = 2e4
 tol = 0.001
 save_dir = 'results'
@@ -284,29 +262,42 @@ import os
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
-update_interval = 200
-pretrain_epochs = 500
+update_interval = 2
+pretrain_epochs = 1
 init = VarianceScaling(scale=1. / 3., mode='fan_in',
                        distribution='uniform')  # [-limit, limit], limit=sqrt(1./fan_in)
 #pretrain_optimizer = SGD(lr=1, momentum=0.9)
 
+import sys
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+import keras.backend as K
 
 dataset = pd.read_csv(sys.argv[1])
 dataset = dataset[dataset.classifs != "\"UNSURE\""]
 dataset.dropna(axis="columns", inplace=True)
 dataset = dataset[[col for col in list(dataset) if len(dataset[col].unique()) > 1]]
 dataset["classifs"] = dataset["classifs"].astype(str)
-X = dataset.iloc[:, 1:-1]
+X = dataset.iloc[:, 1:-1].values
 y = dataset.iloc[:, -1]
 le = LabelEncoder()
 y = le.fit_transform(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y)
+#X_train = X_train.reset_index(drop=True)
+#X_train.index = list(X_train.index)
+
 y_train = le.fit_transform(y_train)
+#y_train = pd.DataFrame(y_train)
+#y_train = y_train.reset_index(drop=True)
+#y_train.index = list(y_train.index)
+
 y_test = le.transform(y_test)
+batch_size = X_train.shape[0]
 
 # prepare the DEC model
-dec = DEC(dims=[X_train.shape[-1], 500, 500, 2000, 3], n_clusters=3, init=init)
+dec = DEC(dims=[X_train.shape[-1], 50, 50, 200, 3], n_clusters=3, init=init)
 
 dec.pretrain(x=X_train, y=y_train, optimizer=pretrain_optimizer,
              epochs=pretrain_epochs, batch_size=batch_size,
@@ -314,7 +305,6 @@ dec.pretrain(x=X_train, y=y_train, optimizer=pretrain_optimizer,
 
 
 dec.compile(optimizer=SGD(0.01, 0.9), loss='kld')
-
 
 y_pred = dec.fit(X_train, y=y_train, tol=tol, maxiter=maxiter, batch_size=batch_size,
                  update_interval=update_interval, save_dir=save_dir)

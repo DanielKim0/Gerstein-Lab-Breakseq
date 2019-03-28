@@ -24,3 +24,8 @@ machine learning models, including:
 * A SVC, which was used to calculate various curves, including ROC and AUC
 * CNNs with varying amounts of layers
 * A DEC, or Deep Embedding for Clustering algorithm. (More info can be found here: https://arxiv.org/abs/1511.06335)
+* An autoencoder-based model
+
+Additional steps were taken with some of the models.
+* Stratified K-Folding was used to generate separate models for each of the algorithms, which were then measured.
+* HYperparameter tuning was used for the random forest, cnn, and autoencoder models.
