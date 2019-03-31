@@ -12,9 +12,9 @@ def argv_length_error():
     print()
 
 def create_slurm(args):
-    output = open(args[0], "r")
+    output = open(args[0], "w")
     output.write("#!/bin/bash\n")
-    if args[1] > 0:
+    if args[1]:
         output.write("#SBATCH --partition=pi_gerstein\n")
     output.write("#SBATCH --mem " + str(args[2]) + "\n")
     output.write("#SBATCH -t " + str(args[3]) + "- #days")
