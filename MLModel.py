@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 import pandas as pd
 import pickle
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, scale
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_score
 
@@ -12,13 +12,13 @@ class MLModel(object):
     def __init__(self, data_file, results_file, split=0):
         self.results = open(results_file, "w")
         self.X, self.y = self.data_prepare(data_file)
+        self.X = scale(self.X)
         if split > 0:
             self.X_train, self.X_test, self.y_train, self.y_test = self.data_train_test(split)
             self.split = True
         else:
             self.split = False
         self.X, self.y = self.data_convert()
-        self.model = self.model_build()
         self.kfold = self.kfold_setup()
 
     @abstractmethod
@@ -46,12 +46,12 @@ class MLModel(object):
         encoder = LabelEncoder()
         y_train = encoder.fit_transform(y_train)
         y_test = encoder.transform(y_test)
-        return X_train.values, X_test.values, y_train, y_test
+        return X_train, X_test, y_train, y_test
 
     def data_convert(self):
         le = LabelEncoder()
         y = le.fit_transform(self.y)
-        return self.X.values, y
+        return self.X, y
 
     def kfold_setup(self):
         return StratifiedKFold(n_splits=10, shuffle=True)
