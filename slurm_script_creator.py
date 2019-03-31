@@ -17,10 +17,10 @@ def create_slurm(args):
     if args[1]:
         output.write("#SBATCH --partition=pi_gerstein\n")
     output.write("#SBATCH --mem " + str(args[2]) + "\n")
-    output.write("#SBATCH -t " + str(args[3]) + "- #days")
+    output.write("#SBATCH -t " + str(args[3]) + "- #days\n")
     output.write("#SBATCH -c " + str(args[4]) + "\n")
-    output.write("source activate mlenv")
-    output.write("python " + str(args[5]) + "  " + str(args[6]) + "\n")
+    output.write("source activate mlenv\n")
+    output.write("python " + str(args[5]) + " " + str(args[6]) + "\n")
     output.close()
 
 if __name__ == "__main__":
