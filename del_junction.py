@@ -1,6 +1,9 @@
 import sys
 
 def parse_line(line, left, right):
+    """
+    Parses a line containing start/end information about a particular junction and separates it into left and right junctions.
+    """
     line_split = line.split("\t")
     line_split[0] = "chr" + line_split[0]
     line_split[1] = int(line_split[1])
@@ -13,6 +16,9 @@ def parse_line(line, left, right):
 
 
 def parse_del_file(file_name):
+    """
+    Parses the result of breakseq into files containing start/end information for left and right junctions.
+    """
     first_line = True
     left = open("left_junction.txt", "w")
     right = open("right_junction.txt", "w")

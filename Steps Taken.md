@@ -10,7 +10,7 @@ We used breakseq to first generate a breakseq library from the hg38 .fa genome ,
 
 Breakseq generated its own statistics of the data, including flexibility, duplex stability, and GC content. Here, the breakseq deletions and insertions were elongated into left junctions (500 bases past the beginning and 50 past the end) and right junctions (50 bases past the beginning and 500 past the end), with one of each junction per sequence. 
 
-Two rounds of feature matrix generation for shape determination using various bigwig files were ran on both left and right sequences. Sequence complexity was then computed using this code <https://github.com/caballero/SeqComplex>. TAD boundary data and fragile site data were used to compute intersections for TAD boundaries. Additionally, recombination hotspot motif occurrences were calculated for the following sequence: "CCNCCNTNNCCNC" (where N is any nucleotide). After this, the data was coalesced and both left and right sequence data combined into one large data file with many various data points.
+Two rounds of feature matrix generation for shape determination using various bigwig files were ran on both left and right sequences. Sequence complexity was then computed using this code <https://github.com/caballero/SeqComplex>. TAD boundary data and fragile site data were used to compute intersections for TAD boundaries. Additionally, recombination hotspot motif occurrences were calculated for the following sequence: "CCNCCNTNNCCNC" (where N is any nucleotide); to do this, nucleotide strings were extracted using samtools. After this, the data was coalesced and both left and right sequence data combined into one large data file with many various data points.
 
 ## Machine Learning
 

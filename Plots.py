@@ -1,3 +1,9 @@
+"""
+Code taken from scikit-learn documentation.
+ROC graph: https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html#sphx-glr-auto-examples-model-selection-plot-roc-py
+PRC graph: https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
@@ -7,7 +13,7 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
 from scipy import interp
 
-def roc(y_test, y_score):
+def roc(y_test, y_score, fig_name):
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
@@ -62,9 +68,9 @@ def roc(y_test, y_score):
     plt.ylabel('True Positive Rate')
     plt.title('Some extension of Receiver operating characteristic to multi-class')
     plt.legend(loc="lower right")
-    plt.savefig('roc_curve.png')
+    plt.savefig(fig_name)
 
-def prc(y_test, y_score, results):
+def prc(y_test, y_score, results, fig_name):
     precision = dict()
     recall = dict()
     average_precision = dict()
@@ -128,4 +134,4 @@ def prc(y_test, y_score, results):
     plt.ylabel('Precision')
     plt.title('Extension of Precision-Recall curve to multi-class')
     plt.legend(lines, labels, loc=(0, -.38), prop=dict(size=14))
-    plt.savefig('prc_curve.png')
+    plt.savefig(fig_name)

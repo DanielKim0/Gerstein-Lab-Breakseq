@@ -148,7 +148,7 @@ class DEC(object):
                                           self.model.get_layer(
                                               'encoder_%d' % (int(len(self.model.layers) / 2) - 1)).output)
                     features = feature_model.predict(self.x)
-                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20, n_jobs=4)
+                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20, n_jobs=-1)
                     y_pred = km.fit_predict(features)
                     # print()
                     print(' '*8 + '|==>  acc: %.4f,  nmi: %.4f  <==|'
@@ -192,7 +192,7 @@ class DEC(object):
         # Step 1: initialize cluster centers using k-means
         t1 = time()
         print('Initializing cluster centers with k-means.')
-        kmeans = KMeans(n_clusters=self.n_clusters, n_init=20)
+        kmeans = KMeans(n_clusters=self.n_clusters, n_init=20, n_jobs=-1)
         y_pred = kmeans.fit_predict(self.encoder.predict(x))
         y_pred_last = np.copy(y_pred)
         self.model.get_layer(name='clustering').set_weights([kmeans.cluster_centers_])

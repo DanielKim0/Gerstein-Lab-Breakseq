@@ -2,12 +2,18 @@ import sys
 
 
 def parse_line(line):
+    """
+    Parses a single line in a gff file.
+    """
     line = line.split()
     new_line = line[:8].copy()
     new_line.append(" ".join(line[8:]))
     return "\t".join(new_line)
 
 def parse_gff_file(file_name):
+    """
+    Main function that parses an entire gff file.
+    """
     data = open("formatted.gff", "w")
     with open(file_name, "r") as gff_file:
         for line in gff_file:

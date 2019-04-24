@@ -2,6 +2,7 @@ import pandas as pd
 import sys
 
 def parse_dna_stats(file):
+    """Parses DNA statistics from the last column of the breakseq results file."""
     file = open(file, "r")
     flex = []
     helix = []
@@ -12,6 +13,7 @@ def parse_dna_stats(file):
     return flex, helix
 
 def parse_mech_classifications(file):
+    """Parses the classifications from the breakseq results file."""
     file = open(file, "r")
     cla = []
     for line in file.readlines():
@@ -20,29 +22,37 @@ def parse_mech_classifications(file):
     return cla
 
 def parse_hotspot_count(file):
+    """Parses the hotspot counts from the results of the hotspot-counting script."""
     data = []
     for line in open(file, "r").readlines():
         data.append(line[0])
     return data
 
 def parse_feat_matrix(file):
+    """Parses a feature matrix, the result of the generating script that analyzes bigwig shape files."""
     data = pd.read_csv(file, sep="\t")
     data["full_seq"] = data["Chromosome"] + ":" + data["start"].apply(str) + "-" + data["end"].apply(str)
     return data.iloc[:,4:]
 
 def parse_seq_complex(file):
+    """Parses the result of the sequence complexity perl script."""
     return pd.read_csv(file, sep="\t")
 
 def parse_intersect(file):
+    """Parses the result of the TAD boundary area intersection file."""
     return pd.read_csv(file, sep="\t", header=None).iloc[:,-2:]
 
 def remove_sames(df):
+    """Removes columns with only one value throughout from a dataframe."""
     for col in df:
         if len(df[col].unique()) == 1:
             del df[col]
     return df
 
 def create_data_matrix(file_list):
+    """
+    Combines all of the requisite data from the above functions to create one large matrix, and then saves it.
+    """
     classifications = parse_mech_classifications(file_list[0])
     flex, helix = parse_dna_stats(file_list[1])
     hotspot_count = parse_hotspot_count(file_list[2])
