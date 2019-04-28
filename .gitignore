@@ -1,5 +1,5 @@
-*.txt
-*.xlsx
 .idea/
 *.csv
 results/
+__pycache__
+Research_Summary.txt

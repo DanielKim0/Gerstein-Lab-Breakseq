@@ -1,0 +1,10 @@
+Model Results
+Number of Estimators: 100
+Accuracy on Train: 0.9999925398743715
+Accuracy on Test: 0.9305831157528286
+KFold Results
+Scores: [0.88612155 0.89677318 0.89738368 0.88532038 0.89299702 0.88673038
+ 0.89503368 0.88610371 0.88579038 0.89487702]
+Accuracy: 0.890713098938793
+Standard Deviation: 0.004836822555323498
+{'n_estimators': 1400, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'auto', 'max_depth': 80, 'bootstrap': False}
