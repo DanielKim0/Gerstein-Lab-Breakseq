@@ -85,7 +85,7 @@ class SVCModel(MLModel):
         svc = OvRC()
         svc_grid = GridSearchCV(estimator=svc, param_distributions=grid, verbose=2, n_jobs=-1)
         svc_grid.fit(self.X_train, self.y_train)
-        self.results.write(str(svc_grid.best_params_) + "\n")
+        self.results.write(str(svc_grid.best_params_) + "\n")z
 
 if __name__ == "__main__":
     svc = SVCModel(sys.argv[1])

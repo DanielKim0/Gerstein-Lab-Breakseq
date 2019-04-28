@@ -7,7 +7,7 @@ The scripts are written in and tested for Python 3. Run a script using *python n
 
 The CSV file is assumed to fulfill the following criteria: the leftmost column is a dummy column (with no data) and the rightmost column is the column containing the labels to classify.s
 
-You can change what parts of the model that you want to run by changing the *main* method located in each of the models, such as if you do not want to generate an ROC graph.
+You can change what parts of the model that you want to run by changing the lines under the if statement located at the bottom of each of the models, such as if you do not want to generate an ROC graph.
 
 ## Project Summary
 The data used for this project originated from the reference genome hg38 from the Genome Reference Consortium. We generated a feature matrix with data about the genome by extracting characteristics from the Genome; first, we classified all of the junctions by using the Breakseq program, and kept deletions and insertions. Our final classifications were NHR, NAHR, and NAHR_EXT. Then, we got a left junction (500 bases past the beginning and 50 past the end) and a right junction (50 bases past the beginning and 500 past the end). We collected data on those junctions, which included:
