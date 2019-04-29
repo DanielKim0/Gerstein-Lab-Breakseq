@@ -11,9 +11,9 @@ COPY . /app
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Run when the container launches
-CMD ["python", "autoencoder.py", "data.csv"]
-CMD ["python", "cnn.py", "data.csv"]
-CMD ["python", "dec.py", "data.csv"]
-CMD ["python", "kmeans.py", "data.csv"]
-CMD ["python", "random_forest.py", "data.csv"]
-CMD ["python", "svc.py", "data.csv"]
+CMD ["sh", "-c", "python scripts/autoencoder.py ${DATA}"]
+CMD ["sh", "-c", "python scripts/cnn.py ${DATA}"]
+CMD ["sh", "-c", "python scripts/dec.py ${DATA}"]
+CMD ["sh", "-c", "python scripts/kmeans.py ${DATA}"]
+CMD ["sh", "-c", "python scripts/random_forest.py ${DATA}"]
+CMD ["sh", "-c", "python scripts/svc.py ${DATA}"]

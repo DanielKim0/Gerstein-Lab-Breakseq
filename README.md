@@ -5,7 +5,7 @@ This repository is a collection of scripts that I used to assist in a machine le
 
 The scripts are written in and tested for Python 3. Run a script using *python name_of_model.py data.csv*, where *name_of_model.py* is the path to the Python script containing the model that you want to run (Ex. random_forest.py), and *data.csv* is the path to the CSV file containing the data.
 
-The CSV file is assumed to fulfill the following criteria: the leftmost column is a dummy column (with no data) and the rightmost column is the column containing the labels to classify.s
+The CSV file is assumed to fulfill the following criteria: the leftmost column is a dummy column (with no data) and the rightmost column is the column containing the labels to classify.
 
 You can change what parts of the model that you want to run by changing the lines under the if statement located at the bottom of each of the models, such as if you do not want to generate an ROC graph.
 
